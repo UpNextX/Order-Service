@@ -11,6 +11,6 @@ public interface CartClient {
     @GetMapping("/carts/me")
     CartDto getCart();
 
-    @DeleteMapping("/carts/me")
+    @DeleteMapping("/carts/me/clear")
     void clearCart();
 }
