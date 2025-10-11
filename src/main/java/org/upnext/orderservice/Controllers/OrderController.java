@@ -68,6 +68,17 @@ public class OrderController {
                 .body(result.getError().getMessage());
     }
 
+    @RequiredRole("ADMIN")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<?> getUserOrders(HttpServletRequest request, @PathVariable Long userId) {
+        Result<List<OrderDto>> result = orderService.getUserOrders(userId);
+        if (result.isSuccess()) {
+            return ResponseEntity.ok(result.getValue());
+        }
+        return ResponseEntity.status(result.getError().getStatusCode())
+                .body(result.getError().getMessage());
+    }
+
     @RequiredRole("AUTHENTICATED")
     @PostMapping("/me/prepare")
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderPaymentRequest orderPaymentRequest, HttpServletRequest request, UriComponentsBuilder urb) throws Exception {
