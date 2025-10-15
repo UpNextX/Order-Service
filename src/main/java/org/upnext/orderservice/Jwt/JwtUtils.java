@@ -27,6 +27,7 @@ public class JwtUtils {
         UserDto user = new UserDto();
         Claims claims = extractAllClaims(token);
         user.setId(Long.parseLong(claims.getSubject()));
+        user.setName(claims.get("name", String.class));
         user.setEmail(claims.get("email", String.class));
         user.setRole(claims.get("role", List.class));
         user.setPhoneNumber(claims.get("phoneNumber", String.class));

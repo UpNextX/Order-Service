@@ -10,7 +10,6 @@ import org.apache.commons.lang.NullArgumentException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.upnext.orderservice.Clients.CartClient;
 import org.upnext.orderservice.Clients.ProductClient;
@@ -26,14 +25,13 @@ import org.upnext.sharedlibrary.Dtos.*;
 import org.upnext.sharedlibrary.Enums.OrderStatus;
 import org.upnext.sharedlibrary.Enums.PaymentMethod;
 import org.upnext.sharedlibrary.Enums.PaymentStatus;
-import org.upnext.sharedlibrary.Errors.Error;
 import org.upnext.sharedlibrary.Errors.Result;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static org.upnext.orderservice.Configurations.RabbitMqConfig.*;
+import static org.upnext.orderservice.Configurations.PaymentRabbitMqConfig.*;
 import static org.upnext.orderservice.Errors.OrderErrors.*;
 
 @Service

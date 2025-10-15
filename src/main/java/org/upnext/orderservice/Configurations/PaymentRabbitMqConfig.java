@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitMqConfig {
+public class PaymentRabbitMqConfig {
 
     public static final String EXCHANGE = "payment.exchange";
     public static final String SUCCESS_QUEUE = "payment.success";
