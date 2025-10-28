@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static org.upnext.orderservice.Configurations.PaymentRabbitMqConfig.*;
 
 @RestController
-@RequestMapping(("/stripe"))
+@RequestMapping("/stripe")
 @RequiredArgsConstructor
 public class StripeWebhookController {
 

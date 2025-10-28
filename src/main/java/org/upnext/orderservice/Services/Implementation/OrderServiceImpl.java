@@ -80,6 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Result<List<OrderDto>> getUserOrders(Long userId) {
+
         List<OrderDto> orders = orderRepository.findAllByUserId(userId)
                 .stream()
                 .map(orderMapper::toOrderDto)
@@ -195,7 +196,6 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("Order Payment Success"+ successfulPaymentEvent);
 
         OrderStatusRequest orderStatusRequest = OrderStatusRequest.builder()
-                                                .orderId(orderId)
                                                 .orderStatus(OrderStatus.CONFIRMED)
                                                 .paymentStatus(PaymentStatus.PAID)
                                                         .build();
@@ -214,7 +214,6 @@ public class OrderServiceImpl implements OrderService {
         increaseStock(order);
         OrderStatusRequest orderStatusRequest = new OrderStatusRequest();
         OrderStatusRequest.builder()
-                .orderId(orderId)
                 .orderStatus(OrderStatus.CANCELED)
                 .paymentStatus(PaymentStatus.FAILED)
                         .build();
