@@ -1,8 +1,13 @@
 package org.upnext.orderservice.Controllers;
 
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
+import com.stripe.model.ChargeCollection;
 import com.stripe.model.Event;
+import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
+import com.stripe.param.PaymentIntentRetrieveParams;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -15,6 +20,7 @@ import org.upnext.sharedlibrary.Dtos.SuccessfulPaymentEvent;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.upnext.orderservice.Configurations.PaymentRabbitMqConfig.*;
@@ -75,14 +81,33 @@ public class StripeWebhookController {
             System.out.println("Session is null");
             return;
         }
+        String paymentIntentId = session.getPaymentIntent();
+
+        System.out.println("PaymentIntent ID: " + paymentIntentId);
+        String chargeId = null;
+        try {
+            PaymentIntentRetrieveParams retrieveParams = PaymentIntentRetrieveParams.builder()
+                    .addExpand("latest_charge")
+                    .build();
+            PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId, retrieveParams, null);
+            Charge charge = paymentIntent.getLatestChargeObject();
+            if (charge != null) {
+                chargeId = charge.getId();
+            } else {
+                System.out.println("⚠️ No charge found for PaymentIntent: " + paymentIntentId);
+            }
+
+        } catch (StripeException e) {
+            e.printStackTrace();
+        }
+
 
         Long orderId = Long.parseLong(session.getMetadata().get("orderId"));
-        System.out.println(orderId);
         Long userId = Long.parseLong(session.getMetadata().get("userId"));
-        System.out.println(userId);
         SuccessfulPaymentEvent successfulPaymentEvent = SuccessfulPaymentEvent.builder()
                 .userId(userId)
                 .orderId(orderId)
+                .paymentTransactionId(chargeId)
                 .build();
         System.out.println(successfulPaymentEvent);
         paymentEventPublisher.convertAndSend(EXCHANGE, SUCCESS_ROUTING_KEY, successfulPaymentEvent);
